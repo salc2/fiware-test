@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT - IoT Accumulator</title>
+    <style type="text/css">
+        #main{
+            width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+    <ul></ul>
+</div>
+<script src="/assets/rx.all.js" type="application/javascript"></script>
+<script type="text/javascript">
+    (function(){
+            var ws = new WebSocket("ws://172.17.0.1:8080/ws")
+
+        ws.onopen = function () {
+                console.log("openning...")
+
+                var messages = Rx.Observable
+                    .fromEvent(ws,'message')
+                    .do(function (elm) {
+                        console.log(elm)
+                    })
+                    .map(function (elme) {
+                        return JSON.parse(elme.data)
+                    }).pluck("data")
+                    .flatMap(function (elm) {
+                        return Rx.Observable.from(elm)
+                    })
+                    .map(function (elm) {
+                        return {id:elm.id,temperature:elm.temperature.value}
+                    })
+
+                messages.subscribe(
+                    function (next) {
+                    render(next)
+                }, function (err) {
+                    console.log(err)
+                },function () {
+                    console.log("complete")
+                })
+            }
+
+            function render(msg) {
+                var main = document.querySelector("#main ul")
+                var row = document.querySelector("#"+msg.id)
+                if(row){
+                    row.innerHTML = msg.id +" "+msg.temperature
+                }else{
+                    var li = document.createElement("li");
+                    li.id = msg.id
+                    var text = document.createTextNode(msg.id +" "+msg.temperature);
+                    li.appendChild(text);
+                    main.appendChild(li)
+                }
+            }
+    })();
+</script>
+</body>
+</html>
