@@ -1,0 +1,10 @@
+
+
+
+
+object test {
+
+  println(" hi ")
+
+
+}

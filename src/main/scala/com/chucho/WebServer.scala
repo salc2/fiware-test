@@ -59,7 +59,7 @@ object WebServer {
 
   def main(args:Array[String]):Unit = {
 
-    val bindingFuture = Http().bindAndHandle(route, "172.17.0.1", 8080)
+    val bindingFuture = Http().bindAndHandle(route, "10.38.67.155", 8080)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine()

@@ -14,13 +14,12 @@ import scala.util.Random
   * Created by g100536 on 31/01/17.
   */
 object Device {
-    val mqttHost = "tcp://172.17.0.2:1883"
     lazy implicit val system = ActorSystem("reactive-kafka")
     lazy implicit val materializer = ActorMaterializer()
     import system.dispatcher
 
   def main(args: Array[String]): Unit = {
-      val actors = for(x <- 1 to 20) yield system.actorOf(Props(classOf[DeviceActor],s"thermotank$x"))
+      val actors = for(x <- 1 to 10) yield system.actorOf(Props(classOf[DeviceActor],s"thermotank$x"))
 
     system.scheduler.schedule(5 seconds, 200 milliseconds, () => {
       actors foreach(_.!("Tick"))
@@ -34,7 +33,7 @@ object Device {
 
 class DeviceActor(name:String) extends Actor{
   val random = new Random()
-  val brokerHost = "tcp://172.17.0.2:1883"
+  val brokerHost = "tcp://10.97.244.183:1883"
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
